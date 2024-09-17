@@ -117,9 +117,9 @@ class Phlex::SGML
 						vanish(self, &block)
 						view_template
 					else
-						view_template do |*args|
-							if args.length > 0
-								__yield_content_with_args__(*args, &block)
+						view_template do |*args, **kwargs|
+							if args.length > 0 || kwargs.length > 0
+								__yield_content_with_args__(*args, **kwargs, &block)
 							else
 								yield_content(&block)
 							end
@@ -365,13 +365,13 @@ class Phlex::SGML
 	# Same as {#yield_content} but accepts a splat of arguments to yield. This is slightly slower than {#yield_content}.
 	# @yield [*args] Yields the given arguments.
 	# @return [nil]
-	def __yield_content_with_args__(*)
+	def __yield_content_with_args__(*, **)
 		return unless block_given?
 
 		buffer = @_context.buffer
 
 		original_length = buffer.bytesize
-		content = yield(*)
+		content = yield(*, **)
 		__text__(content) if original_length == buffer.bytesize
 
 		nil
